@@ -33,7 +33,7 @@ Esta não é a pergunta genérica "me ajude a decidir melhor" (sinal de alerta d
 - Não atribui causalidade não comprovada (ex.: já testamos que devolução não correlaciona com tema de atendimento — o agente não pode reintroduzir essa inferência).
 - Não soma Marketing ou Retenção em R\$ com as demais linhas (`oportunidade_financeira_rs: null` é uma trava, não uma lacuna a preencher).
 - Não decide sozinho — só sugere; a decisão final é sempre humana.
-- Não acessa dado de cliente individual (só agregados de `clientes_1_.csv`).
+- Não acessa dado de cliente individual (só agregados de `clientes.csv`).
 - Não responde sobre iniciativas fora das 5 diagnosticadas nem sobre outras áreas da empresa.
 
 ---
@@ -48,7 +48,7 @@ Esta não é a pergunta genérica "me ajude a decidir melhor" (sinal de alerta d
 | `Case_Vertice_AED_Completa.ipynb` | Rastreabilidade — cada campo do JSON aponta para a célula que o gerou | Última execução: a mesma que gerou o `kpis.json` anexado |
 | `politicas_vertice.md` (a criar) | Guardrails de negócio (limites de aprovação, LGPD) — mesmo papel do `politicas.md` da Aula 07 | — |
 
-O agente **nunca lê os CSVs brutos nem o notebook diretamente em tempo de resposta** — só o `kpis.json` versionado. Isso é o que torna a entrada "confiável o suficiente" (filtro do mentor): qualquer atualização passa pelo pipeline determinístico do notebook antes de chegar ao agente.
+O agente **nunca lê os CSVs brutos nem o notebook diretamente em tempo de resposta** — só o `kpis.json` versionado. Isso é o que torna a entrada "confiável o suficiente": qualquer atualização passa pelo pipeline determinístico do notebook antes de chegar ao agente.
 
 ---
 
@@ -95,7 +95,7 @@ A LLM nunca calcula — só decide qual função chamar e narra o resultado.
 }
 ```
 
-**Regra de validação automática:** todo `status = RESPONDER` precisa ter `evidencias` com ao menos 1 item contendo `periodo` e `recorte` preenchidos — sem isso, a resposta é rejeitada antes de chegar ao usuário (ver Bloco 10).
+**Regra de validação automática:** todo `status = RESPONDER` precisa ter `evidencias` com ao menos 1 item contendo `periodo` e `recorte` preenchidos — sem isso, a resposta é rejeitada antes de chegar ao usuário.
 
 ---
 
@@ -109,19 +109,19 @@ A LLM nunca calcula — só decide qual função chamar e narra o resultado.
    -> faltou informação essencial (ex.: qual cenário de captura)?
       status = PEDIR_ESCLARECIMENTO, proxima_pergunta = "..." , fim.
 
-3. chamar a(s) função(ões) determinística(s) do Bloco 4 — nunca calcular na LLM.
+3. chamar a(s) função(ões) determinística(s) — nunca calcular na LLM.
 
 4. a pergunta exige causalidade, atribuição, previsão ou integração não suportada?
    -> status = RECUSAR, resposta_executiva explica o motivo, fim.
 
-5. montar resposta estruturada (Bloco 6): evidências = saída literal das funções;
+5. montar resposta estruturada: evidências = saída literal das funções;
    limitações = copiadas de "dados_necessarios" do kpis.json quando a hipótese for tipo "cenário".
 
-6. validar (Bloco 10): schema ok? RESPONDER tem periodo+recorte+evidencia?
+6. validar: schema ok? RESPONDER tem periodo+recorte+evidencia?
    nenhuma soma proibida (marketing_reconciliacao / retencao) aparece como R$?
    -> falhou? corrigir ou rebaixar para PEDIR_ESCLARECIMENTO.
 
-7. registrar execução (Bloco 9) e retornar.
+7. registrar execução e retornar.
 ```
 
 ---
@@ -137,7 +137,7 @@ A LLM nunca calcula — só decide qual função chamar e narra o resultado.
 
 **Escalar para humano quando:**
 - A pergunta pede para *executar* uma ação (mudar orçamento, desligar canal, aprovar desconto) — o agente sugere, não executa.
-- O valor envolvido excede os limites do `politicas_vertice.md` (ex.: realocação de orçamento e desconto de retenção, conforme já definido para o agente Multiagente da Aula 07).
+- O valor envolvido excede os limites do `politicas_vertice.md` (ex.: realocação de orçamento e desconto de retenção).
 - A confiança calculada for `baixo` em uma pergunta com decisão de alto impacto.
 
 ---
