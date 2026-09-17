@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vértice · Executive Pitch & Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  :root{
+    --ink:#0f172a; --ink-soft:#475569; --line:#e2e8f0; --line-soft:#f1f5f9;
+    --bg:#f8fafc; --panel:#ffffff;
+    --navy:#0f172a; --navy-2:#1e293b; --blue-accent: #2563eb;
+    --amber:#b45309; --amber-bg:#fef3c7; --amber-line:#fde68a;
+    --rose:#be123c; --rose-bg:#ffe4e6; --rose-line:#fecdd3;
+    --teal:#0f766e; --teal-bg:#ccfbf1; --teal-line:#99f6e4;
+    --purple:#6d28d9; --purple-bg:#ede9fe;
+    --mono: "IBM Plex Mono", "SF Mono", Consolas, monospace;
+    --sans: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  .shell{display:flex;min-height:100vh;}
+
+  /* ---- Sidebar ---- */
+  .side{width:260px;background:var(--navy);color:#cbd5e1;flex-shrink:0;display:flex;flex-direction:column; border-right:1px solid #1e293b;}
+  .side .brand{padding:26px 24px 20px;border-bottom:1px solid rgba(255,255,255,.05);}
+  .side .brand b{color:#f8fafc;font-size:16px;letter-spacing:.3px;display:block;}
+  .side .brand span{font-size:11.5px;color:#94a3b8; margin-top:4px; display:block;}
+  .side nav{padding:20px 16px;flex:1;}
+  .side nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:6px;color:#cbd5e1;
+    text-decoration:none;font-size:13.5px;margin-bottom:4px; transition: 0.15s;}
+  .side nav a.active{background:var(--blue-accent);color:#fff;font-weight:600;}
+  .side nav a:hover:not(.active){background:rgba(255,255,255,.08);color:#fff;}
+  .side .pop{margin:16px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:8px;}
+  .side .pop .lbl{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px; font-weight:600;}
+  .side .pop .val{font-family:var(--mono);font-size:12.5px;color:#f8fafc;display:flex;align-items:flex-start;gap:8px; line-height:1.4;}
+  .side .pop .val .dot{width:8px;height:8px;border-radius:50%;background:#34d399;flex-shrink:0; margin-top:4px;}
+
+  /* ---- Main ---- */
+  .main{flex:1;min-width:0; display:flex; flex-direction:column;}
+  header{height:70px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;
+    align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:10;}
+  header h1{font-size:18px;font-weight:600;margin:0; color:var(--navy);}
+  header .sub{font-size:12.5px;color:var(--ink-soft);margin-left:12px;font-family:var(--mono); background:var(--line-soft); padding:4px 8px; border-radius:4px;}
+  .gov-btn{border:1px solid var(--rose-line);background:var(--rose-bg);color:var(--rose);
+    padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;gap:8px; transition:0.2s;}
+  .gov-btn:hover{background:#fecdd3;}
+
+  .content{padding:32px 32px 60px;max-width:1400px; margin:0 auto; width:100%;}
+
+  /* ---- Pitch Hero Section ---- */
+  .pitch-hero {background: linear-gradient(145deg, #1e293b, #0f172a); border-radius: 12px; padding: 28px 32px; color: #fff; margin-bottom: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);}
+  .pitch-hero h2 {font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin: 0 0 12px 0;}
+  .pitch-hero .problem {font-size: 20px; font-weight: 400; line-height: 1.5; margin: 0 0 20px 0; max-width: 900px; color: #f1f5f9;}
+  .pitch-hero .problem b {color: #fff; font-weight: 600;}
+  .pitch-hero .question {background: rgba(37, 99, 235, 0.2); border-left: 4px solid #3b82f6; padding: 16px 20px; font-size: 16px; font-style: italic; font-weight: 500; border-radius: 0 8px 8px 0; color: #bfdbfe;}
+
+  .section-title {font-size: 18px; font-weight: 600; margin: 0 0 20px 0; padding-bottom: 12px; border-bottom: 2px solid var(--line); display:flex; align-items:center; gap:10px;}
+  .section-title span {background:var(--navy); color:#fff; font-size:12px; padding:2px 8px; border-radius:12px;}
+
+  /* ---- Anchor Cards (Pitch) ---- */
+  .grid-anchors {display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px;}
+  @media(max-width: 1100px) { .grid-anchors {grid-template-columns: 1fr;} }
+  .anchor-card {background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column; overflow:hidden;}
+  .anchor-card .a-head {background: var(--bg); padding: 16px 20px; border-bottom: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center;}
+  .anchor-card .a-head h3 {margin: 0; font-size: 15px; font-weight: 600; color: var(--navy);}
+  .anchor-card .a-head .badge {font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; background: var(--teal-bg); color: var(--teal);}
+  .anchor-card .a-body {padding: 20px;}
+  .anchor-card .fact {font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin-bottom: 16px;}
+  .anchor-card .fact b {color: var(--ink);}
+  .anchor-card .value-block {display:flex; align-items:baseline; gap:12px; margin-bottom: 20px;}
+  .anchor-card .value-block .val {font-family: var(--mono); font-size: 32px; font-weight: 600; color: var(--blue-accent); letter-spacing:-0.5px;}
+  .anchor-card .value-block .sub {font-size: 13px; color: var(--ink-soft); font-weight: 500;}
+  .anchor-card .action-box {background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 16px; margin-top:auto;}
+  .anchor-card .action-box h4 {margin: 0 0 8px 0; font-size: 12.5px; text-transform:uppercase; color: var(--navy); letter-spacing:0.05em;}
+  .anchor-card .action-box p {margin: 0 0 12px 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft);}
+  .anchor-card .gate {display:flex; justify-content:space-between; font-size: 12px; color: var(--ink-soft); background:#fff; padding:10px; border-radius:6px; border:1px solid var(--line);}
+  .anchor-card .gate b {color: var(--teal);}
+
+  /* ---- Deep Dive Grid ---- */
+  .grid-deep {display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px;}
+  @media(max-width: 1200px) { .grid-deep {grid-template-columns: repeat(2, 1fr);} }
+  @media(max-width: 800px) { .grid-deep {grid-template-columns: 1fr;} }
+  
+  .deep-card {background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display:flex; flex-direction:column;}
+  .deep-card.h-wide {grid-column: span 2;}
+  @media(max-width: 800px) { .deep-card.h-wide {grid-column: span 1;} }
+  
+  .deep-card .d-top {display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;}
+  .deep-card .d-top h3 {margin: 0; font-size: 14.5px; font-weight: 600; color: var(--navy); padding-right:10px; line-height:1.4;}
+  
+  .status-tag {font-size: 10.5px; font-weight: 600; padding: 4px 8px; border-radius: 4px; white-space:nowrap;}
+  .status-tag.ok {background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-line);}
+  .status-tag.warn {background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-line);}
+  .status-tag.err {background: var(--rose-bg); color: var(--rose); border: 1px solid var(--rose-line);}
+  .status-tag.info {background: var(--purple-bg); color: var(--purple); border: 1px solid #ddd6fe;}
+
+  .deep-card .metrics {display:flex; flex-wrap:wrap; gap:16px; margin-bottom: 16px; padding-bottom:16px; border-bottom:1px solid var(--line-soft);}
+  .deep-card .m-box {flex: 1; min-width: 120px;}
+  .deep-card .m-box label {display:block; font-size:11px; color:var(--ink-soft); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;}
+  .deep-card .m-box .m-val {font-family:var(--mono); font-size:18px; font-weight:600; color:var(--navy);}
+
+  .deep-card .analysis {font-size: 13px; line-height: 1.6; color: var(--ink-soft); margin-bottom:16px;}
+  .deep-card .analysis strong {color: var(--ink);}
+  
+  .next-steps {background: var(--bg); padding: 12px 16px; border-left: 3px solid var(--blue-accent); border-radius: 0 6px 6px 0; margin-top:auto;}
+  .next-steps span {display:block; font-size:11px; font-weight:600; color:var(--blue-accent); text-transform:uppercase; margin-bottom:4px;}
+  .next-steps p {margin:0; font-size:12.5px; color:var(--navy); line-height:1.5;}
+
+  /* ---- Charts row ---- */
+  .chart-row {display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px;}
+  @media(max-width: 900px) { .chart-row {grid-template-columns: 1fr;} }
+  .chart-panel {background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px;}
+  .chart-panel h3 {margin: 0 0 16px 0; font-size: 14px; font-weight: 600;}
+  .canvas-container {position: relative; height: 260px; width: 100%;}
+
+  /* ---- Modal ---- */
+  .overlay{position:fixed;inset:0;background:rgba(15,23,42,.7);display:none;align-items:center;justify-content:center;
+    padding:20px;z-index:50; backdrop-filter: blur(4px);}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;width:100%;max-width:700px;max-height:85vh;border-radius:12px;overflow:hidden;
+    display:flex;flex-direction:column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);}
+  .modal header{position:static;height:auto;padding:20px 24px;background:#f8fafc; border-bottom:1px solid var(--line);}
+  .modal header h2{font-size:16px;margin:0; color:var(--rose); display:flex; align-items:center; gap:8px;}
+  .modal .x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-soft); transition:0.2s;}
+  .modal .x:hover {color:var(--rose);}
+  .modal .body{padding:8px 24px 24px;overflow-y:auto;}
+  .risk-item{padding:16px 0;border-bottom:1px solid var(--line-soft);}
+  .risk-item:last-child{border-bottom:none;}
+  .risk-item h4{font-size:13.5px;margin:0 0 6px; color:var(--navy); display:flex; align-items:center; gap:8px;}
+  .risk-item h4::before {content: "!"; display:inline-block; width:18px; height:18px; background:var(--rose-bg); color:var(--rose); text-align:center; border-radius:50%; font-size:12px; line-height:18px; font-weight:bold;}
+  .risk-item p{font-size:13px;color:var(--ink-soft);margin:0;line-height:1.6; padding-left:26px;}
+
+</style>
+</head>
+<body>
+
+<script type="application/json" id="kpis-data">
+{
+  "meta": {
+    "hash_fonte": "1c33bed0384a",
+    "populacao_financeira": "vendas_base_financeira (Aprovados)",
+    "periodo": "2023-01-01 a 2024-01-26",
+    "versao": "1.2.0",
+    "nota_metodologica": "Todas as métricas financeiras utilizam somas ponderadas em vez de médias simples para neutralizar distorções de pedidos com margens negativas extremas."
+  },
+  "pitch_deck_structure": {
+    "contexto_desafio": {
+      "problema_central": "Erosão recente de rentabilidade devido a relatórios manuais, dados fragmentados e decisões tomadas por feeling.",
+      "pergunta_chave": "Como usar dados e IA para recuperar rentabilidade, eficiência operacional e qualidade de decisão nos próximos 90 dias?"
+    },
+    "ancora_1_decisao_financeira": {
+      "tema": "Margem e Otimização de Frete no Marketplace",
+      "fato": "O Marketplace possui margem ponderada de 51.5% vs. 55.11% dos outros canais (gap de 3.61 p.p.).",
+      "causa_raiz": "O frete consome 4.90% da receita líquida do Marketplace, contra apenas 0.95% nos outros canais (gap de frete de 3.95 p.p.).",
+      "oportunidade_anual_rs_teorica": 117422.0,
+      "cenarios_captura_anual_rs": {
+        "conservador_25pct": 32144.0,
+        "realista_50pct": 64287.0,
+        "otimista_75pct": 96431.0
+      },
+      "experimento_recomendado": "Negociar cláusulas de repasse de frete e tabela de comissão diretamente com a plataforma operadora do Marketplace.",
+      "gate_sucesso": "Assinatura de novo contrato que recupere pelo menos 25% (R$ 32k/ano) do gap observado nos primeiros 30 dias.",
+      "owner": "Financeiro / Comercial",
+      "prazo_teste_dias": 30
+    },
+    "ancora_2_produto_ia": {
+      "tema": "Agente de Atendimento WISMO (Onde está meu pedido?)",
+      "fato": "A categoria 'Onde está meu pedido?' representa 30.0% do volume total de suporte (média de 68 tickets/semana).",
+      "oportunidade_cx": "O ChatBot entrega CSAT equivalente aos humanos (3.27 vs 3.24) com custo operacional tabelado 86% menor (R$ 2.00 vs R$ 14.83).",
+      "economia_anual_cenarios_rs": {
+        "automacao_50pct": 23022.0,
+        "automacao_70pct": 32230.0,
+        "automacao_90pct": 41439.0
+      },
+      "experimento_recomendado": "Rodar piloto assistido de agente WISMO focado em resolver consultas de rastreamento com integração direta à API da transportadora.",
+      "gate_sucesso": "Taxa de contenção de consultas >= 50% sem necessidade de transbordo humano, mantendo CSAT estável.",
+      "owner": "Operações / Customer Experience (CX)",
+      "prazo_teste_dias": 45
+    }
+  },
+  "analise_profunda_por_hipotese": {
+    "H1_margens_e_devolucoes": {
+      "titulo": "Erosão de Rentabilidade e Exposição de Devoluções",
+      "status_validacao": "Confirmada parcialmente",
+      "metricas_chave": {
+        "margem_ponderada_marketplace": 51.5,
+        "margem_ponderada_outros_canais": 55.11,
+        "gap_margem_pp": 3.61,
+        "cohens_d": 0.28,
+        "cohens_d_interpretacao": "Efeito pequeno-para-médio por pedido individual. A alta relevância financeira é impulsionada estritamente pelo grande volume de vendas do canal.",
+        "percentual_pedidos_devolvidos": 14.88,
+        "margem_contabil_devolvidos_periodo_rs": 1351707.0,
+        "cenario_perda_bruta_anualizada_rs": 1247730.0
+      },
+      "discussao_tecnica": "A fórmula de margem_contribuicao é idêntica para pedidos devolvidos e não devolvidos (~54%). Isso prova que as devoluções NÃO estão sendo descontadas na margem contábil. Portanto, R$ 1.35M de margem estão expostos. Contudo, não podemos tratar isso como perda confirmada porque a base carece de dados de reembolso e logística reversa.",
+      "dados_faltantes_para_homologacao": [
+        "Confirmação física de devolução concluída",
+        "Valor real do reembolso ou estorno efetivado ao cliente",
+        "Custos operacionais de logística reversa e reembalagem",
+        "Destino final do produto (perda total ou reintrodução ao estoque para revenda)"
+      ],
+      "plano_acao_90_dias": {
+        "recomendacao_imediata": "Negociar regras de repasse de frete com o Marketplace.",
+        "proximos_passos": "Apurar com o CFO e controladoria o fluxo físico e contábil das devoluções para atualizar a fórmula de margem de contribuição oficial."
+      }
+    },
+    "H2_marketing_performance": {
+      "titulo": "Qualidade de Canais e Incompatibilidade de Escala",
+      "status_validacao": "Inconsistente para reconciliação absoluta em R$",
+      "metricas_chave": {
+        "investimento_janela_vs_receita_real_pct": 452.0,
+        "receita_atribuida_vs_receita_real_multiplo": 18.9,
+        "canal_melhor_roas": "Influenciador (ROAS: 7.7 | Margem: 52.3% | Ticket Médio: R$ 902)",
+        "canal_pior_roas": "Marketplace (ROAS: 3.0 | Margem: 51.5% | Ticket Médio: R$ 663)"
+      },
+      "discussao_tecnica": "O investimento de marketing na janela de vendas equivale a 4.5 vezes a receita real de vendas da empresa no mesmo período. Isso indica que as duas bases operam em escalas ou dimensões simuladas independentes. Portanto, o cálculo de ROAS absoluto é inválido. A análise de atribuição provou que os modelos se distribuem uniformemente em todos os canais, descartando viés de modelo.",
+      "uso_dashboard": "Utilizar estritamente de forma RELATIVA para ranqueamento de canais (ex: priorizar canal Influenciador em detrimento de Marketplace), sem somar valores absolutos de receita gerada por marketing.",
+      "proximos_passos": "Solicitar ao time de marketing a exportação da planilha de investimentos reais com as mesmas chaves de período e conversão das vendas realizadas."
+    },
+    "H3_operacoes_e_rupturas": {
+      "titulo": "Rupturas de Estoque Concentradas em Beleza",
+      "status_validacao": "Risco Alto de Ruptura Confirmado",
+      "metricas_chave": {
+        "concentracao_rupturas_beleza_pct": 97.0,
+        "skus_beleza_em_ruptura": 96,
+        "skus_beleza_estoque_critico": 232,
+        "receita_media_mensal_sku_saudavel_rs": 251.82,
+        "receita_mensal_em_risco_estoque_critico_rs": 58421.0,
+        "cenarios_receita_potencial_rs": {
+          "indisponibilidade_0.5_mes": 12087.0,
+          "indisponibilidade_1.0_mes": 24174.0,
+          "indisponibilidade_2.0_meses": 48349.0
+        }
+      },
+      "discussao_tecnica": "A categoria Beleza concentra quase a totalidade das rupturas do ecossistema. Testamos variáveis de confusão e todas são idênticas entre as categorias. Isso isola a variável 'shelf_life_dias' como a principal hipótese da causa-raiz contábil.",
+      "risco_vs_fato": "O estoque crítico (232 SKUs) representa R$ 58.4k/mês de risco futuro e preventivo, não devendo ser somado como perda ocorrida. Já a ruptura efetiva (96 SKUs) gerou perda estimada de R$ 24k (cenário central de 1 mês).",
+      "proximos_passos": "Instrumentar o controle temporal de estoque para registrar 'dias_sem_estoque' por SKU e tratar a lista de estoque crítico de Beleza como fila prioritária de abastecimento."
+    },
+    "H4_atendimento_cx": {
+      "titulo": "Eficiência Operacional no Atendimento e Potencial de Automação",
+      "status_validacao": "Confirmada como Oportunidade de Automação",
+      "metricas_chave": {
+        "representatividade_tickets_wismo_pct": 30.0,
+        "volume_medio_semanal_tickets_wismo": 68.0,
+        "taxa_wismo_via_chatbot_hoje_pct": 20.5,
+        "csat_medio_chatbot": 3.27,
+        "csat_medio_geral_base": 3.24,
+        "custo_medio_wismo_humano_rs": 14.83,
+        "custo_medio_chatbot_rs": 2.0
+      },
+      "discussao_tecnica": "O ChatBot já entrega satisfação idêntica à humana por uma fração do custo. Contudo, o dataset atual não possui uma métrica de contenção (se o bot de fato resolveu sem transbordo humano). Cruzando os tickets com as vendas reais via order_id, descobrimos que a taxa de devolução é igual (15% a 17%) em todas as categorias, refutando a ideia de que problemas específicos de atendimento causam mais devoluções.",
+      "proximos_passos": "Implementar um piloto monitorado para mensurar a taxa real de contenção do ChatBot para o tema WISMO antes de projetar economias na escala total de produção."
+    },
+    "H5_fidelidade_e_crm": {
+      "titulo": "Segmentação de CRM e Evitação de Raciocínio Circular",
+      "status_validacao": "Qualitativo Estratégico",
+      "metricas_chave": {
+        "clientes_segmento_em_risco": 3269,
+        "representatividade_clientes_em_risco_pct": 21.8,
+        "representatividade_ltv_em_risco_pct": 12.7,
+        "concentracao_fiel_campeao_clientes_pct": 25.9,
+        "concentracao_fiel_campeao_ltv_pct": 56.0
+      },
+      "discussao_tecnica": "Os segmentos RFM possuem forte sobreposição em faixas de LTV. Calcular um ganho hipotético de R$ 'movendo' clientes para o segmento 'Fiel' configura um raciocínio lógico circular, uma vez que o LTV define o segmento e não o contrário. O LTV acumulado total cobre até 6 anos de histórico, inviabilizando comparação direta com a receita de 13 meses.",
+      "proximos_passos": "Desenvolver réguas de relacionamento personalizadas focadas em resgatar os 3.269 clientes 'Em Risco', monitorando a taxa de recompra real em vez do LTV acumulado."
+    }
+  },
+  "governanca_dados_e_riscos": [
+    "Incompatibilidade Temporal Grave: Vendas cobrem 13 meses; Marketing e Atendimento cobrem 36 meses de dados.",
+    "Baixa Cardinalidade de Clientes: Apenas 346 clientes concentram mais de 27 mil pedidos. Padrão claro de base sintética de testes, impedindo análises confiáveis de cohort no nível individual.",
+    "Ausência de Colunas Operacionais Críticas: Não há registros de 'canal_aquisicao' e 'recencia' em clientes, nem 'giro' e 'dias_sem_estoque' em estoque."
+  ]
+}
+</script>
+
+<div class="shell">
+
+  <aside class="side">
+    <div class="brand"><b>Vértice Analytics</b><span>Executive Briefing · v1.2.0</span></div>
+    <nav>
+      <a href="#" class="active">Painel Executivo</a>
+      <a href="#ancoras">Áncoras de Decisão</a>
+      <a href="#hipoteses">Deep Dive: Hipóteses</a>
+    </nav>
+    <div style="margin-top:auto;">
+      <div class="pop">
+        <div class="lbl">População Base</div>
+        <div class="val"><span class="dot"></span>Aprovados (Base Financeira)</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:8px; line-height:1.5;" id="meta-nota"></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header>
+      <div><h1 style="display:inline">Diagnóstico de Crescimento & Eficiência</h1><span class="sub" id="meta-periodo"></span></div>
+      <button class="gov-btn" id="btn-gov">⚠ Governança & Riscos de Dados</button>
+    </header>
+
+    <div class="content">
+
+      <!-- Hero Section -->
+      <div class="pitch-hero">
+        <h2>O Desafio</h2>
+        <p class="problem" id="pitch-problem"></p>
+        <div class="question" id="pitch-question"></div>
+      </div>
+
+      <!-- Ancoras de Decisao -->
+      <h2 class="section-title" id="ancoras"><span>01</span> Prioridades de Execução (Plano de 90 Dias)</h2>
+      
+      <div class="grid-anchors">
+        <!-- Ancora 1 -->
+        <div class="anchor-card">
+          <div class="a-head">
+            <h3 id="a1-tema"></h3>
+            <span class="badge">Projeto Financeiro</span>
+          </div>
+          <div class="a-body">
+            <p class="fact" id="a1-fato"></p>
+            <div class="value-block">
+              <div class="val" id="a1-val"></div>
+              <div class="sub">Potencial Realista (50%) / Ano</div>
+            </div>
+            <div class="action-box">
+              <h4>Recomendação (Experimento)</h4>
+              <p id="a1-exp"></p>
+              <div class="gate">
+                <span><b>Gate de Sucesso:</b> <span id="a1-gate"></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ancora 2 -->
+        <div class="anchor-card">
+          <div class="a-head">
+            <h3 id="a2-tema"></h3>
+            <span class="badge">Projeto de IA / CX</span>
+          </div>
+          <div class="a-body">
+            <p class="fact" id="a2-fato"></p>
+            <div class="value-block">
+              <div class="val" id="a2-val"></div>
+              <div class="sub">Economia Anual (Cenário 70%)</div>
+            </div>
+            <div class="action-box">
+              <h4>Recomendação (Experimento)</h4>
+              <p id="a2-exp"></p>
+              <div class="gate">
+                <span><b>Gate de Sucesso:</b> <span id="a2-gate"></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analise Profunda (Deep Dive) -->
+      <h2 class="section-title" id="hipoteses"><span>02</span> Aprofundamento Analítico & Auditoria de Hipóteses</h2>
+      
+      <div class="grid-deep">
+        
+        <!-- H1: Margens e Devoluções -->
+        <div class="deep-card h-wide">
+          <div class="d-top">
+            <h3 id="h1-title"></h3>
+            <span class="status-tag warn" id="h1-status"></span>
+          </div>
+          <div class="metrics" id="h1-metrics"></div>
+          <div class="analysis" id="h1-analysis"></div>
+          <div class="next-steps">
+            <span>Próximos Passos (Imediato)</span>
+            <p id="h1-next"></p>
+          </div>
+        </div>
+
+        <!-- H3: Operações e Rupturas (Stock) -->
+        <div class="deep-card">
+          <div class="d-top">
+            <h3 id="h3-title"></h3>
+            <span class="status-tag err" id="h3-status"></span>
+          </div>
+          <div class="metrics" id="h3-metrics"></div>
+          <div class="analysis" id="h3-analysis"></div>
+          <div class="next-steps" style="margin-top:16px;">
+            <span>Ação Preventiva</span>
+            <p id="h3-next"></p>
+          </div>
+        </div>
+
+        <!-- H4: Atendimento (CX) -->
+        <div class="deep-card">
+          <div class="d-top">
+            <h3 id="h4-title"></h3>
+            <span class="status-tag ok" id="h4-status"></span>
+          </div>
+          <div class="metrics" id="h4-metrics"></div>
+          <div class="analysis" id="h4-analysis"></div>
+          <div class="next-steps" style="margin-top:16px;">
+            <span>Ação Operacional</span>
+            <p id="h4-next"></p>
+          </div>
+        </div>
+
+        <!-- H2: Marketing -->
+        <div class="deep-card">
+          <div class="d-top">
+            <h3 id="h2-title"></h3>
+            <span class="status-tag err" id="h2-status"></span>
+          </div>
+          <div class="metrics" id="h2-metrics"></div>
+          <div class="analysis" id="h2-analysis"></div>
+          <div class="next-steps" style="margin-top:16px;">
+            <span>Requisito de Dados</span>
+            <p id="h2-next"></p>
+          </div>
+        </div>
+
+        <!-- H5: CRM -->
+        <div class="deep-card">
+          <div class="d-top">
+            <h3 id="h5-title"></h3>
+            <span class="status-tag info" id="h5-status"></span>
+          </div>
+          <div class="metrics" id="h5-metrics"></div>
+          <div class="analysis" id="h5-analysis"></div>
+          <div class="next-steps" style="margin-top:16px;">
+            <span>Ajuste Estratégico</span>
+            <p id="h5-next"></p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Charts Section -->
+      <h2 class="section-title"><span>03</span> Visualização Dinâmica</h2>
+      <div class="chart-row">
+        <div class="chart-panel">
+          <h3>Margem de Contribuição vs Impacto de Frete</h3>
+          <div class="canvas-container"><canvas id="chartMargin"></canvas></div>
+        </div>
+        <div class="chart-panel">
+          <h3>Custo e Qualidade (CSAT): Bot vs Humano (WISMO)</h3>
+          <div class="canvas-container"><canvas id="chartCx"></canvas></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal Governanca -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <header>
+      <h2>⚠️ Governança de Dados: Alertas Críticos de Validação</h2>
+      <button class="x" id="btn-close">✕</button>
+    </header>
+    <div class="body" id="risk-list"></div>
+  </div>
+</div>
+
+<script>
+// --- Parse JSON ---
+const D = JSON.parse(document.getElementById('kpis-data').textContent);
+const brl = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+
+// --- Populate Meta & Pitch Hero ---
+document.getElementById('meta-periodo').textContent = `Período: ${D.meta.periodo}`;
+document.getElementById('meta-nota').textContent = D.meta.nota_metodologica;
+document.getElementById('pitch-problem').innerHTML = `<b>Problema Central:</b> ${D.pitch_deck_structure.contexto_desafio.problema_central}`;
+document.getElementById('pitch-question').textContent = D.pitch_deck_structure.contexto_desafio.pergunta_chave;
+
+// --- Populate Anchor 1 (Marketplace) ---
+const a1 = D.pitch_deck_structure.ancora_1_decisao_financeira;
+document.getElementById('a1-tema').textContent = a1.tema;
+document.getElementById('a1-fato').innerHTML = `<b>Fato Observado:</b> ${a1.fato} <br><br><b>Causa Raiz:</b> ${a1.causa_raiz}`;
+document.getElementById('a1-val').textContent = brl(a1.cenarios_captura_anual_rs.realista_50pct);
+document.getElementById('a1-exp').textContent = a1.experimento_recomendado;
+document.getElementById('a1-gate').textContent = a1.gate_sucesso;
+
+// --- Populate Anchor 2 (WISMO) ---
+const a2 = D.pitch_deck_structure.ancora_2_produto_ia;
+document.getElementById('a2-tema').textContent = a2.tema;
+document.getElementById('a2-fato').innerHTML = `<b>Fato Observado:</b> ${a2.fato} <br><br><b>Oportunidade CX:</b> ${a2.oportunidade_cx}`;
+document.getElementById('a2-val').textContent = brl(a2.economia_anual_cenarios_rs.automacao_70pct);
+document.getElementById('a2-exp').textContent = a2.experimento_recomendado;
+document.getElementById('a2-gate').textContent = a2.gate_sucesso;
+
+// --- Populate Deep Dive H1 ---
+const h1 = D.analise_profunda_por_hipotese.H1_margens_e_devolucoes;
+document.getElementById('h1-title').textContent = h1.titulo;
+document.getElementById('h1-status').textContent = h1.status_validacao;
+document.getElementById('h1-metrics').innerHTML = `
+  <div class="m-box"><label>Margem MKTPlace</label><div class="m-val">${h1.metricas_chave.margem_ponderada_marketplace}%</div></div>
+  <div class="m-box"><label>Margem Outros</label><div class="m-val">${h1.metricas_chave.margem_ponderada_outros_canais}%</div></div>
+  <div class="m-box"><label>Taxa de Devolução</label><div class="m-val">${h1.metricas_chave.percentual_pedidos_devolvidos}%</div></div>
+  <div class="m-box"><label>Exposição Financeira (R$)</label><div class="m-val" style="color:var(--rose)">${brl(h1.metricas_chave.cenario_perda_bruta_anualizada_rs)}/ano</div></div>
+`;
+document.getElementById('h1-analysis').innerHTML = `<strong>Análise Técnica:</strong> ${h1.discussao_tecnica}`;
+document.getElementById('h1-next').textContent = h1.plano_acao_90_dias.proximos_passos;
+
+// --- Populate Deep Dive H3 ---
+const h3 = D.analise_profunda_por_hipotese.H3_operacoes_e_rupturas;
+document.getElementById('h3-title').textContent = h3.titulo;
+document.getElementById('h3-status').textContent = h3.status_validacao;
+document.getElementById('h3-metrics').innerHTML = `
+  <div class="m-box"><label>Rupturas em Beleza</label><div class="m-val">${h3.metricas_chave.concentracao_rupturas_beleza_pct}%</div></div>
+  <div class="m-box"><label>Estoque Crítico (SKUs)</label><div class="m-val">${h3.metricas_chave.skus_beleza_estoque_critico}</div></div>
+`;
+document.getElementById('h3-analysis').innerHTML = `<strong>Dinâmica:</strong> ${h3.discussao_tecnica} <br><br><strong>Risco vs Fato:</strong> ${h3.risco_vs_fato}`;
+document.getElementById('h3-next').textContent = h3.proximos_passos;
+
+// --- Populate Deep Dive H4 ---
+const h4 = D.analise_profunda_por_hipotese.H4_atendimento_cx;
+document.getElementById('h4-title').textContent = h4.titulo;
+document.getElementById('h4-status').textContent = h4.status_validacao;
+document.getElementById('h4-metrics').innerHTML = `
+  <div class="m-box"><label>Vol. WISMO (Semana)</label><div class="m-val">${h4.metricas_chave.volume_medio_semanal_tickets_wismo}</div></div>
+  <div class="m-box"><label>Custo Humano / Ticket</label><div class="m-val">R$ ${h4.metricas_chave.custo_medio_wismo_humano_rs}</div></div>
+`;
+document.getElementById('h4-analysis').innerHTML = `<strong>Dinâmica:</strong> ${h4.discussao_tecnica}`;
+document.getElementById('h4-next').textContent = h4.proximos_passos;
+
+// --- Populate Deep Dive H2 ---
+const h2 = D.analise_profunda_por_hipotese.H2_marketing_performance;
+document.getElementById('h2-title').textContent = h2.titulo;
+document.getElementById('h2-status').textContent = h2.status_validacao;
+document.getElementById('h2-metrics').innerHTML = `
+  <div class="m-box"><label>Discrepância Rec. vs Inv.</label><div class="m-val" style="color:var(--rose)">${h2.metricas_chave.investimento_janela_vs_receita_real_pct}%</div></div>
+`;
+document.getElementById('h2-analysis').innerHTML = `<strong>Atenção:</strong> ${h2.discussao_tecnica}`;
+document.getElementById('h2-next').textContent = h2.proximos_passos;
+
+// --- Populate Deep Dive H5 ---
+const h5 = D.analise_profunda_por_hipotese.H5_fidelidade_e_crm;
+document.getElementById('h5-title').textContent = h5.titulo;
+document.getElementById('h5-status').textContent = h5.status_validacao;
+document.getElementById('h5-metrics').innerHTML = `
+  <div class="m-box"><label>Clientes "Em Risco"</label><div class="m-val">${h5.metricas_chave.clientes_segmento_em_risco}</div></div>
+`;
+document.getElementById('h5-analysis').innerHTML = `<strong>Atenção Analítica:</strong> ${h5.discussao_tecnica}`;
+document.getElementById('h5-next').textContent = h5.proximos_passos;
+
+
+// --- Chart.js Instances ---
+if (typeof Chart !== 'undefined') {
+  // Chart 1: Margin vs Freight
+  new Chart(document.getElementById('chartMargin'), {
+    type: 'bar',
+    data: {
+      labels: ['Marketplace', 'Outros Canais'],
+      datasets: [
+        { label: 'Margem Líquida %', data: [h1.metricas_chave.margem_ponderada_marketplace, h1.metricas_chave.margem_ponderada_outros_canais], backgroundColor: '#0f172a', borderRadius: 4, barPercentage: 0.6 },
+        { label: 'Custo Frete %', data: [4.90, 0.95], backgroundColor: '#be123c', borderRadius: 4, barPercentage: 0.6 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{family:"Inter"} } } },
+      scales:{ y:{ beginAtZero:true, max:60, grid:{color:'#f1f5f9'} }, x:{ grid:{display:false} } } }
+  });
+
+  // Chart 2: Bot vs Humano (Bubble/Bar workaround using Bar for simplicity in presentation)
+  new Chart(document.getElementById('chartCx'), {
+    type: 'bar',
+    data: {
+      labels: ['Atendimento Humano', 'Agente (Bot)'],
+      datasets: [
+        { label: 'Custo por Ticket (R$)', data: [h4.metricas_chave.custo_medio_wismo_humano_rs, h4.metricas_chave.custo_medio_chatbot_rs], backgroundColor: '#0f766e', borderRadius: 4, yAxisID: 'y' },
+        { label: 'CSAT (Satisfação 0-5)', data: [h4.metricas_chave.csat_medio_geral_base, h4.metricas_chave.csat_medio_chatbot], backgroundColor: '#3b82f6', borderRadius: 4, yAxisID: 'y1' }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{family:"Inter"} } } },
+      scales:{ 
+        y: { type: 'linear', position: 'left', beginAtZero:true, title: {display:true, text:'Custo (R$)'}, grid:{color:'#f1f5f9'} },
+        y1: { type: 'linear', position: 'right', beginAtZero:true, max: 5, title: {display:true, text:'CSAT Score'}, grid:{display:false} },
+        x: { grid:{display:false} } 
+      } 
+    }
+  });
+}
+
+// --- Governance Modal Logic ---
+const govRisks = D.governanca_dados_e_riscos;
+document.getElementById('risk-list').innerHTML = govRisks.map((r, i) =>
+  `<div class="risk-item"><h4>Alerta Operacional ${i+1}</h4><p>${r}</p></div>`).join('');
+
+const overlay = document.getElementById('overlay');
+const openGov = () => overlay.classList.add('show');
+document.getElementById('btn-gov').onclick = openGov;
+document.getElementById('btn-close').onclick = () => overlay.classList.remove('show');
+overlay.onclick = (e) => { if (e.target === overlay) overlay.classList.remove('show'); };
+</script>
+</body>
+</html>
