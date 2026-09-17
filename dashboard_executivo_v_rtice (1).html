@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vértice · Executive Pitch & Dashboard</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['IBM Plex Mono', 'monospace'],
+                    },
+                    colors: {
+                        navy: { 800: '#1e293b', 900: '#0f172a' },
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' },
+                        danger: { 50: '#fef2f2', 500: '#ef4444', 900: '#7f1d1d' },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { background-color: #f8fafc; color: #334155; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); }
+        .gradient-text { background: linear-gradient(90deg, #2563eb, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Smooth transitions */
+        .card-hover { transition: all 0.2s ease-in-out; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased text-slate-800">
+
+<script type="application/json" id="kpis-data">
+{
+  "meta": {
+    "hash_fonte": "1c33bed0384a",
+    "populacao_financeira": "vendas_base_financeira (Aprovados)",
+    "periodo": "2023-01-01 a 2024-01-26",
+    "versao": "1.2.0",
+    "nota_metodologica": "Todas as métricas financeiras utilizam somas ponderadas em vez de médias simples para neutralizar distorções de pedidos com margens negativas extremas."
+  },
+  "pitch_deck_structure": {
+    "contexto_desafio": {
+      "problema_central": "Erosão recente de rentabilidade devido a relatórios manuais, dados fragmentados e decisões tomadas por feeling.",
+      "pergunta_chave": "Como usar dados e IA para recuperar rentabilidade, eficiência operacional e qualidade de decisão nos próximos 90 dias?"
+    },
+    "ancora_1_decisao_financeira": {
+      "tema": "Margem e Otimização de Frete no Marketplace",
+      "fato": "O Marketplace possui margem ponderada de 51.5% vs. 55.11% dos outros canais (gap de 3.61 p.p.).",
+      "causa_raiz": "O frete consome 4.90% da receita líquida do Marketplace, contra apenas 0.95% nos outros canais (gap de frete de 3.95 p.p.).",
+      "oportunidade_anual_rs_teorica": 117422.0,
+      "cenarios_captura_anual_rs": {
+        "conservador_25pct": 32144.0,
+        "realista_50pct": 64287.0,
+        "otimista_75pct": 96431.0
+      },
+      "experimento_recomendado": "Negociar cláusulas de repasse de frete e tabela de comissão diretamente com a plataforma operadora do Marketplace.",
+      "gate_sucesso": "Assinatura de novo contrato que recupere pelo menos 25% (R$ 32k/ano) do gap observado nos primeiros 30 dias.",
+      "owner": "Financeiro / Comercial",
+      "prazo_teste_dias": 30
+    },
+    "ancora_2_produto_ia": {
+      "tema": "Agente de Atendimento WISMO (Onde está meu pedido?)",
+      "fato": "A categoria 'Onde está meu pedido?' representa 30.0% do volume total de suporte (média de 68 tickets/semana).",
+      "oportunidade_cx": "O ChatBot entrega CSAT equivalente aos humanos (3.27 vs 3.24) com custo operacional tabelado 86% menor (R$ 2.00 vs R$ 14.83).",
+      "economia_anual_cenarios_rs": {
+        "automacao_50pct": 23022.0,
+        "automacao_70pct": 32230.0,
+        "automacao_90pct": 41439.0
+      },
+      "experimento_recomendado": "Rodar piloto assistido de agente WISMO focado em resolver consultas de rastreamento com integração direta à API da transportadora.",
+      "gate_sucesso": "Taxa de contenção de consultas >= 50% sem necessidade de transbordo humano, mantendo CSAT estável.",
+      "owner": "Operações / Customer Experience (CX)",
+      "prazo_teste_dias": 45
+    }
+  },
+  "analise_profunda_por_hipotese": {
+    "H1_margens_e_devolucoes": {
+      "titulo": "Erosão de Rentabilidade e Exposição de Devoluções",
+      "status_validacao": "Confirmada parcialmente",
+      "metricas_chave": {
+        "margem_ponderada_marketplace": 51.5,
+        "margem_ponderada_outros_canais": 55.11,
+        "gap_margem_pp": 3.61,
+        "cohens_d": 0.28,
+        "cohens_d_interpretacao": "Efeito pequeno-para-médio por pedido individual. A alta relevância financeira é impulsionada estritamente pelo grande volume de vendas do canal.",
+        "percentual_pedidos_devolvidos": 14.88,
+        "margem_contabil_devolvidos_periodo_rs": 1351707.0,
+        "cenario_perda_bruta_anualizada_rs": 1247730.0
+      },
+      "discussao_tecnica": "A fórmula de margem_contribuicao é idêntica para pedidos devolvidos e não devolvidos (~54%). Isso prova que as devoluções NÃO estão sendo descontadas na margem contábil. Portanto, R$ 1.35M de margem estão expostos. Contudo, não podemos tratar isso como perda confirmada porque a base carece de dados de reembolso e logística reversa.",
+      "dados_faltantes_para_homologacao": [
+        "Confirmação física de devolução concluída",
+        "Valor real do reembolso ou estorno efetivado",
+        "Custos operacionais de logística reversa"
+      ],
+      "plano_acao_90_dias": {
+        "recomendacao_imediata": "Negociar regras de repasse de frete com o Marketplace.",
+        "proximos_passos": "Apurar com o CFO o fluxo físico e contábil das devoluções."
+      }
+    },
+    "H2_marketing_performance": {
+      "titulo": "Qualidade de Canais e Incompatibilidade de Escala",
+      "status_validacao": "Inconsistente para reconciliação",
+      "metricas_chave": {
+        "investimento_janela_vs_receita_real_pct": 452.0,
+        "receita_atribuida_vs_receita_real_multiplo": 18.9,
+        "canal_melhor_roas": "Influenciador",
+        "canal_pior_roas": "Marketplace"
+      },
+      "discussao_tecnica": "O investimento de marketing equivale a 4.5 vezes a receita real de vendas. As duas bases operam em dimensões simuladas independentes. O cálculo de ROAS absoluto é inválido. A análise de atribuição provou que os modelos se distribuem uniformemente em todos os canais.",
+      "uso_dashboard": "Utilizar estritamente de forma RELATIVA para ranqueamento de canais.",
+      "plano_acao_90_dias": {
+        "recomendacao_imediata": "Suspender orçamentos baseados em ROAS absoluto do painel atual.",
+        "proximos_passos": "Solicitar ao time de marketing a exportação da planilha de investimentos reais."
+      }
+    },
+    "H3_operacoes_e_rupturas": {
+      "titulo": "Rupturas de Estoque Concentradas em Beleza",
+      "status_validacao": "Risco Alto Confirmado",
+      "metricas_chave": {
+        "concentracao_rupturas_beleza_pct": 97.0,
+        "skus_beleza_em_ruptura": 96,
+        "skus_beleza_estoque_critico": 232,
+        "receita_media_mensal_sku_saudavel_rs": 251.82,
+        "receita_mensal_em_risco_estoque_critico_rs": 58421.0,
+        "cenarios_receita_potencial_rs": {
+          "indisponibilidade_0.5_mes": 12087.0,
+          "indisponibilidade_1.0_mes": 24174.0,
+          "indisponibilidade_2.0_meses": 48349.0
+        }
+      },
+      "discussao_tecnica": "A categoria Beleza concentra quase a totalidade das rupturas. Isso isola a variável 'shelf_life_dias' como a principal hipótese da causa-raiz. O estoque crítico representa R$ 58.4k/mês de risco futuro.",
+      "plano_acao_90_dias": {
+        "recomendacao_imediata": "Fila prioritária de abastecimento para os 232 SKUs de Beleza.",
+        "proximos_passos": "Instrumentar o registro temporal de 'dias_sem_estoque'."
+      }
+    },
+    "H4_atendimento_cx": {
+      "titulo": "Eficiência e Automação no Atendimento",
+      "status_validacao": "Oportunidade Confirmada",
+      "metricas_chave": {
+        "representatividade_tickets_wismo_pct": 30.0,
+        "volume_medio_semanal_tickets_wismo": 68.0,
+        "taxa_wismo_via_chatbot_hoje_pct": 20.5,
+        "csat_medio_chatbot": 3.27,
+        "csat_medio_geral_base": 3.24,
+        "custo_medio_wismo_humano_rs": 14.83,
+        "custo_medio_chatbot_rs": 2.0
+      },
+      "discussao_tecnica": "O ChatBot entrega satisfação idêntica à humana por uma fração do custo (R$ 2 vs R$ 14). A taxa de devolução é igual (15% a 17%) em todas as categorias de tickets, refutando a ideia de que problemas específicos de atendimento causam mais devoluções.",
+      "plano_acao_90_dias": {
+        "recomendacao_imediata": "Piloto monitorado para mensurar a taxa real de contenção WISMO.",
+        "proximos_passos": "Integrar API da transportadora direto no fluxo do Bot."
+      }
+    },
+    "H5_fidelidade_e_crm": {
+      "titulo": "Segmentação de CRM e Qualidade",
+      "status_validacao": "Qualitativo Estratégico",
+      "metricas_chave": {
+        "clientes_segmento_em_risco": 3269,
+        "representatividade_clientes_em_risco_pct": 21.8,
+        "representatividade_ltv_em_risco_pct": 12.7,
+        "concentracao_fiel_campeao_clientes_pct": 25.9,
+        "concentracao_fiel_campeao_ltv_pct": 56.0
+      },
+      "discussao_tecnica": "Calcular um ganho hipotético movendo clientes para o segmento 'Fiel' é raciocínio circular, pois o LTV define o segmento. O LTV acumulado total cobre 6 anos, inviabilizando comparação direta com a receita recente.",
+      "plano_acao_90_dias": {
+        "recomendacao_imediata": "Desenvolver réguas de relacionamento para resgatar os 3.269 clientes.",
+        "proximos_passos": "Monitorar a taxa de recompra real em vez do LTV acumulado."
+      }
+    }
+  },
+  "governança_dados_e_riscos": [
+    "Incompatibilidade Temporal Grave: Vendas cobrem 13 meses; Marketing e Atendimento cobrem 36 meses.",
+    "Baixa Cardinalidade de Clientes: Apenas 346 clientes concentram mais de 27 mil pedidos (Base sintética).",
+    "Ausência de Colunas Operacionais Críticas: Não há 'canal_aquisicao' nem 'dias_sem_estoque'."
+  ]
+}
+</script>
+
+<!-- Sidebar -->
+<aside class="w-64 bg-navy-900 text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 hidden md:flex">
+    <div class="p-6 border-b border-white/5">
+        <div class="flex items-center gap-2 mb-1">
+            <i class="ph ph-chart-polar text-2xl text-brand-500"></i>
+            <b class="text-white font-semibold text-lg tracking-wide">Vértice</b>
+        </div>
+        <span class="text-xs text-slate-500 font-mono" id="ui-version">Executive Briefing</span>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="#pitch" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-brand-600 text-white font-medium text-sm transition-colors">
+            <i class="ph ph-presentation-chart text-lg"></i> Pitch & Âncoras
+        </a>
+        <a href="#deep-dive" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 hover:text-white font-medium text-sm transition-colors">
+            <i class="ph ph-magnifying-glass text-lg"></i> Deep Dive: Hipóteses
+        </a>
+        <a href="#charts" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 hover:text-white font-medium text-sm transition-colors">
+            <i class="ph ph-chart-line-up text-lg"></i> Análise Visual
+        </a>
+    </nav>
+    
+    <div class="p-4">
+        <button id="btn-gov-side" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-danger-900/40 border border-danger-500/30 text-danger-500 hover:bg-danger-900/60 hover:text-danger-400 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all">
+            <i class="ph ph-warning-octagon text-lg"></i>
+            Riscos de Dados
+        </button>
+        <div class="mt-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+            <div class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mb-2">População Base</div>
+            <div class="font-mono text-xs text-slate-200 flex items-start gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0 mt-1 shadow-[0_0_8px_rgba(52,211,153,0.5)]"></span>
+                <span id="ui-pop">Aprovados</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-3 leading-relaxed" id="ui-nota"></p>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+    <!-- Header -->
+    <header class="h-16 glass-panel border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 z-20 shrink-0">
+        <div class="flex items-center gap-4">
+            <button class="md:hidden text-slate-500 hover:text-navy-900"><i class="ph ph-list text-2xl"></i></button>
+            <h1 class="text-lg lg:text-xl font-semibold text-navy-900">Diagnóstico de Crescimento & Eficiência</h1>
+            <span class="hidden lg:inline-block text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded border border-slate-200" id="ui-periodo"></span>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors" title="Exportar Relatório">
+                <i class="ph ph-download-simple text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Scrollable Body -->
+    <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth" id="main-scroll">
+        <div class="max-w-7xl mx-auto space-y-12 pb-20">
+
+            <!-- Pitch Section -->
+            <section id="pitch" class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-900 to-navy-800 text-white shadow-xl">
+                <div class="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                    <i class="ph-fill ph-rocket-launch text-9xl"></i>
+                </div>
+                <div class="relative z-10 p-8 lg:p-10">
+                    <div class="text-xs uppercase tracking-widest text-brand-500 font-semibold mb-4">Contexto Executivo</div>
+                    <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                        <div>
+                            <h2 class="text-2xl lg:text-3xl font-semibold leading-tight mb-4" id="pitch-problem">
+                                <!-- Preenchido via JS -->
+                            </h2>
+                            <p class="text-slate-400 text-sm mb-6">Diagnóstico baseado na análise cruzada de finanças, operações, marketing e atendimento ao cliente.</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md border-l-4 border-brand-500 p-6 rounded-r-xl">
+                            <i class="ph-fill ph-quotes text-brand-500/50 text-3xl mb-2 block"></i>
+                            <p class="text-lg font-medium text-brand-50 italic leading-relaxed" id="pitch-question">
+                                <!-- Preenchido via JS -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Anchors Section -->
+            <section>
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-navy-900 text-white text-sm font-bold shadow-md">01</span>
+                    <h2 class="text-xl font-semibold text-navy-900">Prioridades de Execução <span class="text-slate-400 font-normal text-base">(Plano 90 Dias)</span></h2>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <!-- Anchor 1 -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 card-hover flex flex-col h-full relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-full -z-0"></div>
+                        <div class="flex justify-between items-start mb-4 relative z-10">
+                            <div>
+                                <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold tracking-wide uppercase mb-2 border border-emerald-200">Projeto Financeiro</span>
+                                <h3 class="text-lg font-semibold text-navy-900" id="a1-tema"></h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600"><i class="ph ph-currency-circle-dollar text-xl"></i></div>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6 flex-1" id="a1-fato"></p>
+                        
+                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-100 mb-6">
+                            <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Oportunidade Anual (Realista 50%)</div>
+                            <div class="font-mono text-3xl font-bold text-emerald-600 tracking-tight" id="a1-val"></div>
+                            
+                            <!-- Scenarios Bar -->
+                            <div class="mt-4">
+                                <div class="flex justify-between text-[10px] text-slate-400 mb-1 font-mono">
+                                    <span>Conservador (25%)</span>
+                                    <span>Otimista (75%)</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden flex">
+                                    <div class="h-full bg-emerald-300 w-1/3 border-r border-white"></div>
+                                    <div class="h-full bg-emerald-500 w-1/3 border-r border-white relative"><span class="absolute -top-1 left-1/2 w-3 h-3 bg-white border-2 border-emerald-600 rounded-full transform -translate-x-1/2"></span></div>
+                                    <div class="h-full bg-emerald-700 w-1/3"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100 pt-5 mt-auto">
+                            <div class="flex items-start gap-3">
+                                <i class="ph-fill ph-target text-brand-500 text-xl mt-0.5"></i>
+                                <div>
+                                    <h4 class="text-xs font-bold text-navy-900 uppercase tracking-wide mb-1">Recomendação</h4>
+                                    <p class="text-sm text-slate-600 mb-3" id="a1-exp"></p>
+                                    <div class="inline-flex items-center gap-2 bg-brand-50 text-brand-700 px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-100">
+                                        <i class="ph ph-flag-checkered"></i> <span id="a1-gate"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Anchor 2 -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 card-hover flex flex-col h-full relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-bl-full -z-0"></div>
+                        <div class="flex justify-between items-start mb-4 relative z-10">
+                            <div>
+                                <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold tracking-wide uppercase mb-2 border border-brand-200">Projeto IA & CX</span>
+                                <h3 class="text-lg font-semibold text-navy-900" id="a2-tema"></h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600"><i class="ph ph-robot text-xl"></i></div>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6 flex-1" id="a2-fato"></p>
+                        
+                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-100 mb-6">
+                            <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Economia Anual (Cenário 70%)</div>
+                            <div class="font-mono text-3xl font-bold text-brand-600 tracking-tight" id="a2-val"></div>
+                            
+                            <!-- Scenarios Bar -->
+                            <div class="mt-4">
+                                <div class="flex justify-between text-[10px] text-slate-400 mb-1 font-mono">
+                                    <span>50% Automação</span>
+                                    <span>90% Automação</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden flex">
+                                    <div class="h-full bg-brand-300 w-[40%] border-r border-white"></div>
+                                    <div class="h-full bg-brand-500 w-[30%] border-r border-white relative"><span class="absolute -top-1 left-1/2 w-3 h-3 bg-white border-2 border-brand-600 rounded-full transform -translate-x-1/2"></span></div>
+                                    <div class="h-full bg-brand-700 w-[30%]"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100 pt-5 mt-auto">
+                            <div class="flex items-start gap-3">
+                                <i class="ph-fill ph-target text-brand-500 text-xl mt-0.5"></i>
+                                <div>
+                                    <h4 class="text-xs font-bold text-navy-900 uppercase tracking-wide mb-1">Recomendação</h4>
+                                    <p class="text-sm text-slate-600 mb-3" id="a2-exp"></p>
+                                    <div class="inline-flex items-center gap-2 bg-brand-50 text-brand-700 px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-100">
+                                        <i class="ph ph-flag-checkered"></i> <span id="a2-gate"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deep Dive Section -->
+            <section id="deep-dive">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-navy-900 text-white text-sm font-bold shadow-md">02</span>
+                    <h2 class="text-xl font-semibold text-navy-900">Aprofundamento Analítico <span class="text-slate-400 font-normal text-base">(Auditoria das Hipóteses)</span></h2>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-6" id="hypotheses-container">
+                    <!-- Cards will be injected via JS -->
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section id="charts">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-navy-900 text-white text-sm font-bold shadow-md">03</span>
+                    <h2 class="text-xl font-semibold text-navy-900">Visualização de Impacto</h2>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Chart 1: Margins -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-base font-semibold text-navy-900">Margem Líquida vs Custo de Frete</h3>
+                            <span class="text-xs font-medium bg-slate-100 text-slate-500 px-2 py-1 rounded">H1 Financeiro</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">Comparativo direto revelando a erosão de margem no Marketplace causada pelo frete.</p>
+                        <div class="relative h-64 w-full"><canvas id="chartMargin"></canvas></div>
+                    </div>
+
+                    <!-- Chart 2: CX Quality -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-base font-semibold text-navy-900">Qualidade vs Custo no Atendimento</h3>
+                            <span class="text-xs font-medium bg-slate-100 text-slate-500 px-2 py-1 rounded">H4 CX</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">CSAT (escala direita) mantido enquanto o custo por ticket (escala esquerda) despenca via Bot.</p>
+                        <div class="relative h-64 w-full"><canvas id="chartCx"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-6">
+                     <!-- Chart 3: Stock Risks -->
+                     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-base font-semibold text-navy-900">Risco de Ruptura (SKUs)</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4 text-center">Concentração absoluta em Beleza.</p>
+                        <div class="relative h-48 w-full flex justify-center"><canvas id="chartStock"></canvas></div>
+                    </div>
+
+                     <!-- Chart 4: CRM -->
+                     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-base font-semibold text-navy-900">Segmentação CRM</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4 text-center">Clientes vs LTV Acumulado.</p>
+                        <div class="relative h-48 w-full flex justify-center"><canvas id="chartCrm"></canvas></div>
+                    </div>
+
+                    <!-- Chart 5: Marketing Discrepancy -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-danger-50/50 z-0"></div>
+                        <div class="relative z-10 text-center">
+                            <i class="ph-fill ph-warning-octagon text-4xl text-danger-500 mb-3"></i>
+                            <h3 class="text-base font-semibold text-navy-900 mb-2">Alerta H2: Marketing</h3>
+                            <div class="font-mono text-4xl font-bold text-danger-600 mb-2" id="ui-mkt-discrepancy">452%</div>
+                            <p class="text-sm text-danger-900/80 font-medium px-4 mb-4">Discrepância entre investimento relatado e receita real.</p>
+                            
+                            <div class="text-left text-xs text-slate-700 bg-white/90 p-4 rounded-xl shadow-sm mx-2 border border-danger-200 space-y-2">
+                                <p><strong>O que isso significa?</strong> A base de marketing aponta um custo em anúncios <b>4,5x maior</b> que <i>toda a receita real</i> da empresa no período.</p>
+                                <p><strong>Por que está assim?</strong> Erro de temporalidade: as vendas cobrem 13 meses, enquanto o marketing cobre 36 meses.</p>
+                                <p><strong>Consequência:</strong> O ROAS absoluto calculado é <b>matematicamente inválido</b> para uso financeiro.</p>
+                                <p><strong>Como usar?</strong> Apenas de forma <b>relativa</b>. Ex: Se o canal A tem ROAS 7 e o B tem 3, o canal A é melhor (mesmo o número estando inflado).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</main>
+
+<!-- Governance Modal -->
+<div id="gov-modal" class="fixed inset-0 bg-navy-900/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="gov-modal-content">
+        <div class="bg-danger-50 border-b border-danger-100 p-5 flex items-center justify-between">
+            <div class="flex items-center gap-3 text-danger-700">
+                <i class="ph-fill ph-warning-octagon text-2xl"></i>
+                <h2 class="text-lg font-semibold">Alertas Críticos de Governança de Dados</h2>
+            </div>
+            <button id="close-modal" class="text-danger-400 hover:text-danger-700 transition-colors"><i class="ph ph-x text-xl"></i></button>
+        </div>
+        <div class="p-6">
+            <p class="text-sm text-slate-600 mb-6">As análises apresentadas neste dashboard sofreram ajustes metodológicos para compensar as seguintes anomalias identificadas nas bases de dados originais:</p>
+            <div class="space-y-4" id="gov-risks-container">
+                <!-- Injected via JS -->
+            </div>
+            <div class="mt-8 pt-4 border-t border-slate-100 flex justify-end">
+                <button id="close-modal-btn" class="px-5 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">Ciente, Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Parse JSON Data
+    const rawData = document.getElementById('kpis-data').textContent;
+    const D = JSON.parse(rawData);
+
+    // Helpers
+    const formatBRL = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    const getStatusColor = (status) => {
+        const s = status.toLowerCase();
+        if(s.includes('confirmada par')) return 'bg-amber-100 text-amber-700 border-amber-200';
+        if(s.includes('confirmada')) return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+        if(s.includes('inconsistente') || s.includes('risco alto')) return 'bg-danger-100 text-danger-700 border-danger-200';
+        return 'bg-brand-100 text-brand-700 border-brand-200';
+    };
+
+    // 2. Populate Sidebar & Meta
+    document.getElementById('ui-version').textContent = `v${D.meta.versao} · ${D.meta.hash_fonte.substring(0,6)}`;
+    document.getElementById('ui-pop').textContent = D.meta.populacao_financeira.split('(')[1].replace(')','');
+    document.getElementById('ui-nota').textContent = D.meta.nota_metodologica;
+    document.getElementById('ui-periodo').textContent = D.meta.periodo;
+
+    // 3. Populate Pitch
+    const pitch = D.pitch_deck_structure.contexto_desafio;
+    // Highlight 'Erosão recente de rentabilidade'
+    let problemText = pitch.problema_central.replace('Erosão recente de rentabilidade', '<span class="text-amber-400 font-bold">Erosão recente de rentabilidade</span>');
+    document.getElementById('pitch-problem').innerHTML = problemText;
+    document.getElementById('pitch-question').textContent = `"${pitch.pergunta_chave}"`;
+
+    // 4. Populate Anchors
+    const a1 = D.pitch_deck_structure.ancora_1_decisao_financeira;
+    document.getElementById('a1-tema').textContent = a1.tema;
+    document.getElementById('a1-fato').innerHTML = `<b>Realidade:</b> ${a1.fato} <br><br><b>Causa Raiz:</b> ${a1.causa_raiz}`;
+    document.getElementById('a1-val').textContent = formatBRL(a1.cenarios_captura_anual_rs.realista_50pct);
+    document.getElementById('a1-exp').textContent = a1.experimento_recomendado;
+    document.getElementById('a1-gate').textContent = a1.gate_sucesso;
+
+    const a2 = D.pitch_deck_structure.ancora_2_produto_ia;
+    document.getElementById('a2-tema').textContent = a2.tema;
+    document.getElementById('a2-fato').innerHTML = `<b>Realidade:</b> ${a2.fato} <br><br><b>Oportunidade:</b> ${a2.oportunidade_cx}`;
+    document.getElementById('a2-val').textContent = formatBRL(a2.economia_anual_cenarios_rs.automacao_70pct);
+    document.getElementById('a2-exp').textContent = a2.experimento_recomendado;
+    document.getElementById('a2-gate').textContent = a2.gate_sucesso;
+
+    // 5. Populate Hypotheses (Deep Dive)
+    const hContainer = document.getElementById('hypotheses-container');
+    const hypotheses = [
+        { id: 'H1', data: D.analise_profunda_por_hipotese.H1_margens_e_devolucoes, icon: 'ph-trend-down', cols: 'lg:col-span-2' },
+        { id: 'H3', data: D.analise_profunda_por_hipotese.H3_operacoes_e_rupturas, icon: 'ph-package', cols: 'lg:col-span-1' },
+        { id: 'H4', data: D.analise_profunda_por_hipotese.H4_atendimento_cx, icon: 'ph-headset', cols: 'lg:col-span-1' },
+        { id: 'H2', data: D.analise_profunda_por_hipotese.H2_marketing_performance, icon: 'ph-megaphone', cols: 'lg:col-span-1' },
+        { id: 'H5', data: D.analise_profunda_por_hipotese.H5_fidelidade_e_crm, icon: 'ph-users', cols: 'lg:col-span-1' }
+    ];
+
+    let hHTML = '';
+    hypotheses.forEach(h => {
+        const v = h.data;
+        const colorCls = getStatusColor(v.status_validacao);
+        
+        // Build generic metric blocks from available data (picking first 2 or 3 critical ones)
+        let metricsHtml = '';
+        if(h.id === 'H1') {
+            metricsHtml = `
+                <div class="flex-1 min-w-[120px]"><div class="text-[10px] text-slate-500 uppercase font-semibold">Margem MktPlace</div><div class="font-mono text-lg font-bold text-navy-900">${v.metricas_chave.margem_ponderada_marketplace}%</div></div>
+                <div class="flex-1 min-w-[120px]"><div class="text-[10px] text-slate-500 uppercase font-semibold">Margem Outros</div><div class="font-mono text-lg font-bold text-navy-900">${v.metricas_chave.margem_ponderada_outros_canais}%</div></div>
+                <div class="flex-1 min-w-[120px]"><div class="text-[10px] text-slate-500 uppercase font-semibold">Exposição Devoluções</div><div class="font-mono text-lg font-bold text-danger-600">${formatBRL(v.metricas_chave.cenario_perda_bruta_anualizada_rs)}/ano</div></div>
+            `;
+        } else if (h.id === 'H3') {
+            metricsHtml = `
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">Rupturas Beleza</div><div class="font-mono text-lg font-bold text-navy-900">${v.metricas_chave.concentracao_rupturas_beleza_pct}%</div></div>
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">SKUs em Risco</div><div class="font-mono text-lg font-bold text-danger-600">${v.metricas_chave.skus_beleza_estoque_critico}</div></div>
+            `;
+        } else if (h.id === 'H4') {
+             metricsHtml = `
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">Custo Humano</div><div class="font-mono text-lg font-bold text-navy-900">R$ ${v.metricas_chave.custo_medio_wismo_humano_rs}</div></div>
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">Custo Bot</div><div class="font-mono text-lg font-bold text-emerald-600">R$ ${v.metricas_chave.custo_medio_chatbot_rs}</div></div>
+            `;
+        } else if (h.id === 'H2') {
+             metricsHtml = `
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">Melhor ROAS Relativo</div><div class="font-mono text-sm font-bold text-emerald-600 mt-1">${v.metricas_chave.canal_melhor_roas.split('(')[0]}</div></div>
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">Pior ROAS Relativo</div><div class="font-mono text-sm font-bold text-danger-600 mt-1">${v.metricas_chave.canal_pior_roas.split('(')[0]}</div></div>
+            `;
+        } else if (h.id === 'H5') {
+            metricsHtml = `
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">Clientes 'Em Risco'</div><div class="font-mono text-lg font-bold text-amber-600">${v.metricas_chave.clientes_segmento_em_risco}</div></div>
+                <div class="flex-1"><div class="text-[10px] text-slate-500 uppercase font-semibold">LTV Concentrado 'Fiéis'</div><div class="font-mono text-lg font-bold text-navy-900">${v.metricas_chave.concentracao_fiel_campeao_ltv_pct}%</div></div>
+            `;
+        }
+
+        hHTML += `
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 card-hover flex flex-col ${h.cols}">
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600"><i class="ph ${h.icon} text-lg"></i></div>
+                    <h3 class="text-base font-semibold text-navy-900 leading-tight">${v.titulo}</h3>
+                </div>
+            </div>
+            <div class="mb-4"><span class="inline-block px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider border ${colorCls}">${v.status_validacao}</span></div>
+            
+            <div class="flex flex-wrap gap-4 mb-4 pb-4 border-b border-slate-100 bg-slate-50/50 p-3 rounded-lg">
+                ${metricsHtml}
+            </div>
+            
+            <div class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed">
+                <strong class="text-navy-900 font-semibold">Síntese:</strong> ${v.discussao_tecnica}
+            </div>
+            
+            <div class="bg-brand-50/50 border-l-4 border-brand-500 p-3 rounded-r-lg mt-auto">
+                <div class="text-[10px] font-bold text-brand-700 uppercase tracking-wider mb-1">Ação 90 Dias</div>
+                <p class="text-xs text-navy-900 font-medium">${v.plano_acao_90_dias.recomendacao_imediata}</p>
+            </div>
+        </div>
+        `;
+    });
+    hContainer.innerHTML = hHTML;
+
+    // Specific UI updates
+    document.getElementById('ui-mkt-discrepancy').textContent = D.analise_profunda_por_hipotese.H2_marketing_performance.metricas_chave.investimento_janela_vs_receita_real_pct + '%';
+
+
+    // 6. Charts Initialization
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.scale.grid.color = '#f1f5f9';
+
+    // Chart 1: Margins
+    const ctxMargin = document.getElementById('chartMargin').getContext('2d');
+    new Chart(ctxMargin, {
+        type: 'bar',
+        data: {
+            labels: ['Marketplace', 'Outros Canais'],
+            datasets: [
+                { label: 'Margem Líquida %', data: [51.5, 55.11], backgroundColor: '#1e293b', borderRadius: 4, barPercentage: 0.6 },
+                { label: 'Custo Frete %', data: [4.90, 0.95], backgroundColor: '#ef4444', borderRadius: 4, barPercentage: 0.6 }
+            ]
+        },
+        options: { 
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
+            scales: { y: { beginAtZero: true, max: 65 }, x: { grid: { display: false } } } 
+        }
+    });
+
+    // Chart 2: CX Bot vs Human
+    const ctxCx = document.getElementById('chartCx').getContext('2d');
+    new Chart(ctxCx, {
+        type: 'bar',
+        data: {
+            labels: ['Atendimento Humano', 'Agente Bot (IA)'],
+            datasets: [
+                { label: 'Custo por Ticket (R$)', data: [14.83, 2.00], backgroundColor: '#3b82f6', borderRadius: 4, yAxisID: 'y', order: 2 },
+                { label: 'CSAT (0-5)', data: [3.24, 3.27], type: 'line', borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 3, pointRadius: 6, yAxisID: 'y1', order: 1 }
+            ]
+        },
+        options: { 
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
+            scales: { 
+                y: { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Custo R$', font:{size:10} } },
+                y1: { type: 'linear', position: 'right', beginAtZero: true, min: 0, max: 5, grid: { display: false }, title: { display: true, text: 'Score CSAT', font:{size:10} } },
+                x: { grid: { display: false } } 
+            } 
+        }
+    });
+
+    // Chart 3: Stock Risk (Doughnut)
+    const ctxStock = document.getElementById('chartStock').getContext('2d');
+    new Chart(ctxStock, {
+        type: 'doughnut',
+        data: {
+            labels: ['Beleza (Rupturas)', 'Outras Categorias'],
+            datasets: [{ data: [97, 3], backgroundColor: ['#ef4444', '#cbd5e1'], borderWidth: 0, hoverOffset: 4 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '75%',
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font:{size:11} } } }
+        }
+    });
+
+    // Chart 4: CRM Segmentation (Pie)
+    const ctxCrm = document.getElementById('chartCrm').getContext('2d');
+    new Chart(ctxCrm, {
+        type: 'pie',
+        data: {
+            labels: ['Clientes "Fiel/Campeão"', 'Clientes "Em Risco"', 'Outros'],
+            datasets: [{ data: [25.9, 21.8, 52.3], backgroundColor: ['#3b82f6', '#f59e0b', '#e2e8f0'], borderWidth: 0 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font:{size:10} } } }
+        }
+    });
+
+
+    // 7. Governance Modal Logic
+    const govRisks = D.governança_dados_e_riscos;
+    document.getElementById('gov-risks-container').innerHTML = govRisks.map((r, i) => `
+        <div class="flex items-start gap-3 p-3 bg-white border border-danger-100 rounded-lg shadow-sm">
+            <div class="w-6 h-6 rounded-full bg-danger-100 text-danger-600 flex items-center justify-center font-bold text-xs shrink-0">${i+1}</div>
+            <p class="text-sm text-slate-700 leading-relaxed">${r.replace(/:/g, ':<br><strong class="text-navy-900">').replace(/;/g, '</strong>')}</p>
+        </div>
+    `).join('');
+
+    const modal = document.getElementById('gov-modal');
+    const modalContent = document.getElementById('gov-modal-content');
+    const btnOpen = document.getElementById('btn-gov-side');
+    const btnsClose = [document.getElementById('close-modal'), document.getElementById('close-modal-btn')];
+
+    const openModal = () => {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        // trigger reflow
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+    };
+
+    const closeModal = () => {
+        modal.classList.add('opacity-0');
+        modalContent.classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    };
+
+    btnOpen.addEventListener('click', openModal);
+    btnsClose.forEach(btn => btn.addEventListener('click', closeModal));
+    modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+
+});
+</script>
+</body>
+</html>
