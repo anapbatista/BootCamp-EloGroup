@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "hash_fonte": "1c33bed0384a",
+    "populacao_financeira": "vendas_base_financeira (Aprovados)",
+    "periodo": "2023-01-01 a 2024-01-26",
+    "versao": "1.2.0",
+    "nota_metodologica": "Todas as métricas financeiras utilizam somas ponderadas em vez de médias simples para neutralizar distorções de pedidos com margens negativas extremas."
+  },
+  "pitch_deck_structure": {
+    "contexto_desafio": {
+      "problema_central": "Erosão recente de rentabilidade devido a relatórios manuais, dados fragmentados e decisões tomadas por feeling.",
+      "pergunta_chave": "Como usar dados e IA para recuperar rentabilidade, eficiência operacional e qualidade de decisão nos próximos 90 dias?"
+    },
+    "ancora_1_decisao_financeira": {
+      "tema": "Margem e Otimização de Frete no Marketplace",
+      "fato": "O Marketplace possui margem ponderada de 51.5% vs. 55.11% dos outros canais (gap de 3.61 p.p.).",
+      "causa_raiz": "O frete consome 4.90% da receita líquida do Marketplace, contra apenas 0.95% nos outros canais (gap de frete de 3.95 p.p.).",
+      "oportunidade_anual_rs_teorica": 117422.0,
+      "cenarios_captura_anual_rs": {
+        "conservador_25pct": 32144.0,
+        "realista_50pct": 64287.0,
+        "otimista_75pct": 96431.0
+      },
+      "experimento_recomendado": "Negociar cláusulas de repasse de frete e tabela de comissão diretamente com a plataforma operadora do Marketplace.",
+      "gate_sucesso": "Assinatura de novo contrato que recupere pelo menos 25% (R$ 32k/ano) do gap observado nos primeiros 30 dias.",
+      "owner": "Financeiro / Comercial",
+      "prazo_teste_dias": 30
+    },
+    "ancora_2_produto_ia": {
+      "tema": "Agente de Atendimento WISMO (Onde está meu pedido?)",
+      "fato": "A categoria 'Onde está meu pedido?' representa 30.0% do volume total de suporte (média de 68 tickets/semana).",
+      "oportunidade_cx": "O ChatBot entrega CSAT equivalente aos humanos (3.27 vs 3.24) com custo operacional tabelado 86% menor (R$ 2.00 vs R$ 14.83).",
+      "economia_anual_cenarios_rs": {
+        "automacao_50pct": 23022.0,
+        "automacao_70pct": 32230.0,
+        "automacao_90pct": 41439.0
+      },
+      "experimento_recomendado": "Rodar piloto assistido de agente WISMO focado em resolver consultas de rastreamento com integração direta à API da transportadora.",
+      "gate_sucesso": "Taxa de contenção de consultas >= 50% sem necessidade de transbordo humano, mantendo CSAT estável.",
+      "owner": "Operações / Customer Experience (CX)",
+      "prazo_teste_dias": 45
+    }
+  },
+  "analise_profunda_por_hipotese": {
+    "H1_margens_e_devolucoes": {
+      "titulo": "Erosão de Rentabilidade e Exposição de Devoluções",
+      "status_validacao": "Confirmada parcialmente",
+      "metricas_chave": {
+        "margem_ponderada_marketplace": 51.5,
+        "margem_ponderada_outros_canais": 55.11,
+        "gap_margem_pp": 3.61,
+        "cohens_d": 0.28,
+        "cohens_d_interpretacao": "Efeito pequeno-para-médio por pedido individual. A alta relevância financeira é impulsionada estritamente pelo grande volume de vendas do canal.",
+        "percentual_pedidos_devolvidos": 14.88,
+        "margem_contabil_devolvidos_periodo_rs": 1351707.0,
+        "cenario_perda_bruta_anualizada_rs": 1247730.0
+      },
+      "discussao_tecnica": "A fórmula de margem_contribuicao é idêntica para pedidos devolvidos e não devolvidos (~54%). Isso prova que as devoluções NÃO estão sendo descontadas na margem contábil. Portanto, R$ 1.35M de margem estão expostos. Contudo, não podemos tratar isso como perda confirmada porque a base carece de dados de reembolso e logística reversa.",
+      "dados_faltantes_para_homologacao": [
+        "Confirmação física de devolução concluída",
+        "Valor real do reembolso ou estorno efetivado ao cliente",
+        "Custos operacionais de logística reversa e reembalagem",
+        "Destino final do produto (perda total ou reintrodução ao estoque para revenda)"
+      ],
+      "plano_acao_90_dias": {
+        "recomendacao_imediata": "Negociar regras de repasse de frete com o Marketplace.",
+        "proximos_passos": "Apurar com o CFO e controladoria o fluxo físico e contábil das devoluções para atualizar a fórmula de margem de contribuição oficial."
+      }
+    },
+    "H2_marketing_performance": {
+      "titulo": "Qualidade de Canais e Incompatibilidade de Escala",
+      "status_validacao": "Inconsistente para reconciliação absoluta em R$",
+      "metricas_chave": {
+        "investimento_janela_vs_receita_real_pct": 452.0,
+        "receita_atribuida_vs_receita_real_multiplo": 18.9,
+        "canal_melhor_roas": "Influenciador (ROAS: 7.7 | Margem: 52.3% | Ticket Médio: R$ 902)",
+        "canal_pior_roas": "Marketplace (ROAS: 3.0 | Margem: 51.5% | Ticket Médio: R$ 663)"
+      },
+      "discussao_tecnica": "O investimento de marketing na janela de vendas equivale a 4.5 vezes a receita real de vendas da empresa no mesmo período. Isso indica que as duas bases operam em escalas ou dimensões simuladas independentes. Portanto, o cálculo de ROAS absoluto é inválido. A análise de atribuição provou que os modelos (Linear, First Click, Last Click) se distribuem uniformemente em todos os canais, descartando viés de modelo de atribuição.",
+      "uso_dashboard": "Utilizar estritamente de forma RELATIVA para ranqueamento de canais (ex: priorizar canal Influenciador em detrimento de Marketplace), sem somar valores absolutos de receita gerada por marketing.",
+      "proximos_passos": "Solicitar ao time de marketing a exportação da planilha de investimentos reais com as mesmas chaves de período e conversão das vendas realizadas."
+    },
+    "H3_operacoes_e_rupturas": {
+      "titulo": "Rupturas de Estoque Concentradas em Beleza",
+      "status_validacao": "Risco Alto de Ruptura Confirmado",
+      "metricas_chave": {
+        "concentracao_rupturas_beleza_pct": 97.0,
+        "skus_beleza_em_ruptura": 96,
+        "skus_beleza_estoque_critico": 232,
+        "receita_media_mensal_sku_saudavel_rs": 251.82,
+        "receita_mensal_em_risco_estoque_critico_rs": 58421.0,
+        "cenarios_receita_potencial_rs": {
+          "indisponibilidade_0.5_mes": 12087.0,
+          "indisponibilidade_1.0_mes": 24174.0,
+          "indisponibilidade_2.0_meses": 48349.0
+        }
+      },
+      "discussao_tecnica": "A categoria Beleza concentra quase a totalidade das rupturas do ecossistema. Testamos variáveis de confusão (lead time, ponto de pedido, quantidade de fornecedores) e todas são idênticas entre as categorias. Isso isola a variável 'shelf_life_dias' (que varia de 180 a 730 dias apenas em Beleza) como a principal hipótese da causa-raiz contábil.",
+      "risco_vs_fato": "O estoque crítico (232 SKUs) representa R$ 58.4k/mês de risco futuro e preventivo, não devendo ser somado como perda ocorrida. Já a ruptura efetiva (96 SKUs) gerou perda estimada de R$ 24k (cenário central de 1 mês de indisponibilidade).",
+      "proximos_passos": "Instrumentar o controle temporal de estoque para registrar 'dias_sem_estoque' por SKU e tratar a lista de estoque crítico de Beleza como fila prioritária de abastecimento."
+    },
+    "H4_atendimento_cx": {
+      "titulo": "Eficiência Operacional no Atendimento e Potencial de Automação",
+      "status_validacao": "Confirmada como Oportunidade de Automação",
+      "metricas_chave": {
+        "representatividade_tickets_wismo_pct": 30.0,
+        "volume_medio_semanal_tickets_wismo": 68.0,
+        "taxa_wismo_via_chatbot_hoje_pct": 20.5,
+        "csat_medio_chatbot": 3.27,
+        "csat_medio_geral_base": 3.24,
+        "custo_medio_wismo_humano_rs": 14.83,
+        "custo_medio_chatbot_rs": 2.0
+      },
+      "discussao_tecnica": "O ChatBot já entrega satisfação idêntica à humana por uma fração do custo. Contudo, o dataset atual não possui uma métrica de contenção (se o bot de fato resolveu sem transbordo humano). Cruzando os tickets com as vendas reais via order_id, descobrimos que a taxa de devolução é igual (15% a 17%) em todas as categorias de tickets de suporte, refutando a ideia de que problemas específicos de atendimento causam mais devoluções.",
+      "proximos_passos": "Implementar um piloto monitorado para mensurar a taxa real de contenção do ChatBot para o tema WISMO antes de projetar economias na escala total de produção."
+    },
+    "H5_fidelidade_e_crm": {
+      "titulo": "Segmentação de CRM e Evitação de Raciocínio Circular",
+      "status_validacao": "Qualitativo Estratégico (Sem impacto financeiro direto defendível)",
+      "metricas_chave": {
+        "clientes_segmento_em_risco": 3269,
+        "representatividade_clientes_em_risco_pct": 21.8,
+        "representatividade_ltv_em_risco_pct": 12.7,
+        "concentracao_fiel_campeao_clientes_pct": 25.9,
+        "concentracao_fiel_campeao_ltv_pct": 56.0
+      },
+      "discussao_tecnica": "Os segmentos RFM possuem forte sobreposição em faixas de LTV (ex: clientes 'Em Risco' variam de R$ 140 a R$ 29k de LTV acumulado). Calcular um ganho hipotético de R$ 'movendo' clientes para o segmento 'Fiel' configura um raciocínio lógico circular, uma vez que o LTV define o segmento e não o contrário. Além disso, o LTV acumulado total (R$ 139M) cobre até 6 anos de histórico, o que inviabiliza sua comparação direta com a receita de vendas de 13 meses.",
+      "proximos_passos": "Desenvolver réguas de relacionamento personalizadas focadas em resgatar os 3.269 clientes 'Em Risco', monitorando a taxa de recompra real em vez do LTV acumulado."
+    }
+  },
+  "governança_dados_e_riscos": [
+    "Incompatibilidade Temporal Grave: Vendas cobrem 13 meses; Marketing e Atendimento cobrem 36 meses de dados.",
+    "Baixa Cardinalidade de Clientes: Apenas 346 clientes concentram mais de 27 mil pedidos. Padrão claro de base sintética de testes, impedindo análises confiáveis de cohort no nível individual.",
+    "Ausência de Colunas Operacionais Críticas: Não há registros de 'canal_aquisicao' e 'recencia' em clientes, nem 'giro' e 'dias_sem_estoque' em estoque."
+  ]
+}
