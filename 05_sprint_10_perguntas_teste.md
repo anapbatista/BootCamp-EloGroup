@@ -1,4 +1,4 @@
-# Sprint 1 — 10 Perguntas de Teste
+# Sprint  — 10 Perguntas de Teste
 ### Agente de Priorização de Iniciativas · Vértice Retail
 Fonte de dados congelada: `kpis.json` (hash `1c33bed0384a`, gerado a partir de `vendas_base_financeira`, jan/2023–jan/2024)
 
@@ -23,7 +23,7 @@ Cada pergunta está marcada com o **tipo** da tabela 6.1 do mentor, o **status e
 
 **Proibidas:** previsão de vendas, causalidade não testada, soma de linhas com `oportunidade_financeira_rs: null`, identificação de cliente individual, qualquer resposta quando a fonte estiver ausente/alterada.
 
-## Nota de aceite do Sprint 1
+## Nota de aceite do Sprint 
 
 - [x] Decisão escolhida e congelada 
 - [x] Recorte financeiro congelado (`vendas_base_financeira`, Aprovados, jan/23–jan/24)
