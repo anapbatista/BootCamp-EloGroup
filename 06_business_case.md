@@ -227,19 +227,7 @@ O valor é verificável sem inventar cifra. Quatro dos dez casos do Sprint 1 sã
 
 ---
 
-## 8. Divergências a corrigir antes do deck
-
-| # | Onde | Diz hoje | `kpis.json` diz | Classificação |
-|---|---|---|---|---|
-| **D1** | Célula "Diagnóstico executivo por hipótese" | *"custo de frete consome ~8,7% da receita, quase o dobro dos outros canais"* | **4,90% vs. 0,95%** — cinco vezes, não o dobro | **Bloqueante.** É a tabela executiva; alimenta o deck |
-| **D2** | Célula "Insight preliminar" (Seção 3) | margem Marketplace ~46,0%, gap ~4,6 p.p., frete 8,7% vs. 2,4–4,8% | 51,50% vs. 55,11%, gap 3,61 p.p. | **Tolerável se rotulado.** É o registro da leitura exploratória por média simples; precisa de rótulo "superada pela ponderada" |
-| **D3** | Contradição entre artefatos | Célula 8.1 do notebook indica **automação WISMO** como produto de IA | `blueprint_agente_priorizacao.md` e `sprint1_10_perguntas_teste.md` constroem o **Agente de Priorização** | **Bloqueante.** A mentoria pediu **um** caminho (Etapa 4.2) |
-
-**Proposta da squad para D3, a confirmar antes do deck — não é decisão tomada.** Adotar o Agente de Priorização como caminho único: é o que tem blueprint aprovado, 10 casos de teste versionados e Sprint 1 com nota de aceite, e é um dos três caminhos que a mentoria listou. A automação WISMO não é um agente de decisão — é iniciativa operacional, e permanece no pipeline da Seção 6. **Esta escolha precisa do aceite do time antes de entrar em qualquer slide**, porque contradiz o que o notebook diz hoje.
-
----
-
-## 9. Riscos
+## 8. Riscos
 
 | Risco | Impacto | Mitigação |
 |---|---|---|
@@ -302,8 +290,5 @@ O valor é verificável sem inventar cifra. Quatro dos dez casos do Sprint 1 sã
 - [x] Teto de investimento calculado em vez de custo suposto
 - [x] Perdas secundárias quantificadas (guardrail de conversão)
 - [x] Limitações da base declaradas antes de qualquer número (R1, R2, R3)
-- [x] Divergências entre artefatos registradas; D3 apresentada como proposta, não como decisão
-- [ ] D1 corrigido e D2 rotulado no notebook — **pendente, Trilha A do roadmap**
-- [ ] D3 confirmada pelo time — **pendente, decisão da squad**
 
 **Critério de aprovação deste documento:** uma pessoa de fora consegue reproduzir qualquer valor a partir do `kpis.json`, dizer de qual das três classes ele é, e explicar por que a recomendação principal não é uma economia.
