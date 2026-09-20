@@ -85,7 +85,7 @@ A ferramenta tem uma lista fechada de ações que nunca executa por conta própr
 - Desligar um canal de aquisição de clientes
 - Aprovar concessão de desconto ou cupom diretamente
 
-Qualquer pedido que se encaixe nessas categorias, ou que envolva uma realocação de recurso acima de R$ 100 mil, é automaticamente recusado, com a orientação explícita de que a decisão exige aprovação humana. Esse limite é verificado de forma automática a cada pedido — não depende do modelo de linguagem "lembrar" de aplicá-lo.
+Qualquer pedido que se encaixe nessas categorias, ou que envolva uma realocação de recurso acima de R$ 100 mil, é automaticamente recusado, com a orientação explícita de que a decisão exige aprovação humana. Esse limite é verificado de forma automática a cada pedido — não depende do modelo de linguagem "lembrar" de aplicá-lo. O valor de R$ 100 mil usado neste protótipo é um placeholder ilustrativo definido pela squad — não uma política aprovada pela Vértice — e precisa ser substituído por um limite real, definido pelo Financeiro, antes de qualquer uso em produção.
 
 ## Controles necessários, consolidados
 
