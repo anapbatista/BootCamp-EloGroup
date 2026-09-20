@@ -3,7 +3,7 @@
     "hash_fonte": "1c33bed0384a",
     "populacao_financeira": "vendas_base_financeira (Aprovados)",
     "periodo": "2023-01-01 a 2024-01-26",
-    "versao": "1.2.0",
+    "versao": "1.1.0",
     "nota_metodologica": "Todas as métricas financeiras utilizam somas ponderadas em vez de médias simples para neutralizar distorções de pedidos com margens negativas extremas."
   },
   "pitch_deck_structure": {
