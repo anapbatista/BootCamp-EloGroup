@@ -50,7 +50,7 @@ Nenhuma dessas frentes está pronta para virar meta de economia sem um passo adi
 
 Entre as seis hipóteses, duas reúnem hoje o melhor equilíbrio entre valor, velocidade de teste e confiança nos dados — e são o ponto de partida recomendado para os próximos 90 dias:
 
-**Frente financeira — frete no Marketplace.** É a única frente com um número em reais já defensável. O próximo passo é a negociação de cláusulas de frete e comissão diretamente com a plataforma, com meta de recuperar ao menos 25% do gap observado no primeiro mês.
+**Frente financeira — frete no Marketplace.** É a única frente com um número em reais já defensável. O próximo passo é a negociação de cláusulas de frete e comissão diretamente com a plataforma, com meta de recuperar parte do gab observado no primeiro mês.
 
 **Frente operacional — automação do atendimento sobre status de pedido.** É a frente com o caminho mais rápido de validação. O próximo passo é um piloto monitorado medindo se a automação de fato resolve o chamado sem intervenção humana, mantendo a satisfação do cliente estável.
 
