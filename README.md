@@ -8,13 +8,13 @@ O BootCamp da Elo Group é uma iniciativa de capacitação que conecta aprendiza
 
 Dentro desse contexto, este projeto representa uma aplicação concreta dos conceitos aprendidos durante o programa: desde a coleta e organização dos dados, passando pela análise exploratória, até a construção de insights, hipóteses e entregáveis executivos.
 
-## Conteúdo do projeto
+## Principais conteúdos do projeto
 
 - Dados originais e derivados, organizados de forma reprodutível para apoiar o tratamento, a análise e a geração dos resultados.
-- Agente de IA em Python, desenvolvido em notebook (`.ipynb`).
-- Análise exploratória com insights relevantes e árvore de hipóteses, também disponibilizada em notebook (`.ipynb`).
-- Dashboard executivo em HTML para apresentação visual dos principais resultados.
-- Pitch executivo apresentado à banca avaliadora.
+- Agente de IA em Python, desenvolvido em notebook (`07_code_agente_priorizacao_iniciativas.ipynb`).
+- Análise exploratória com insights relevantes e árvore de hipóteses, também disponibilizada em notebook (`03_case_vertice_AED_completa.ipynb`).
+- Dashboard executivo em HTML para apresentação visual dos principais resultados (`04_dashboard_executivo.html`).
+- Pitch executivo apresentado à banca avaliadora em PDF (`11_pitch_grupo _22.pdf`).
 
 ## Dashboard
 
