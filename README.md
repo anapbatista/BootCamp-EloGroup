@@ -27,6 +27,6 @@ Acesse o dashboard diretamente pelo GitHub Pages:
 Projeto desenvolvido por:
 
 - Ana Batista
-- Luiz, parceiro de equipe
+- Luiz Braz
 
-Agradecimento especial ao Eduardo, nosso mentor, pelo acompanhamento e orientação ao longo do projeto.
+Agradecimento especial ao Eduardo G. Menezes, nosso mentor, pelo acompanhamento e orientação ao longo do projeto.
